@@ -1,23 +1,43 @@
-const mineflayer = require('mineflayer');
+const bedrock = require('bedrock-protocol');
 
-const bot = mineflayer.createBot({
-  host: 'Killanimal.aternos.me', // Your Aternos IP
-  port: '19132',                           // Your Aternos Port
-  tag: '26.52.3',                         // Your server version
-  username: 'killanimal_Bot'                    // Bot's in-game name
-});
+function createBot() {
+  const client = bedrock.createClient({
+    host: 'Killanimal.aternos.me', // Tomar Aternos Server IP
+    port: 19132,                  // Tomar Bedrock Port
+    username: 'AFK_Bot',          // Bot-er in-game nam
+    offline: true                 // Cracked/Aternos server er jonno true thakbe
+  });
 
-bot.on('spawn', () => {
-  console.log('Bot joined the server successfully!');
-  
-  // Optional: Send a random message every 5 minutes to avoid idle kick
-  setInterval(() => {
-    bot.chat('Server is active!');
-  }, 300000);
-});
+  client.on('connect', () => {
+    console.log('✅ Bedrock AFK Bot successfully connected to the server!');
+  });
 
-bot.on('error', (err) => console.log('Error:', err));
-bot.on('end', () => {
-  console.log('Bot disconnected, reconnecting...');
-  setTimeout(() => process.exit(1), 5000);
-});
+  client.on('spawn', () => {
+    console.log('Bot spawned in the world and keeping chunks loaded.');
+
+    // Prottek 2 minutes (120,000 milliseconds) por por automatic message pathabe
+    setInterval(() => {
+      // Bedrock server-e text command pathanor standard syntax
+      client.queue('text', {
+        type: 'chat',
+        needs_translation: false,
+        source_name: client.username,
+        xuid: '',
+        platform_chat_id: '',
+        message: '🤖 Bot is active and keeping the Aternos server alive! [Made by Ramim]'
+      });
+      console.log('💬 Sent AFK message to server.');
+    }, 120000); // 120000 ms = 2 minutes
+  });
+
+  client.on('error', (err) => {
+    console.log('❌ Connection Error:', err);
+  });
+
+  client.on('close', () => {
+    console.log('⚠️ Bot disconnected from server. Reconnecting in 15 seconds...');
+    setTimeout(createBot, 15000); // Connection kete gele 15 second por abar try korbe
+  });
+}
+
+createBot();
