@@ -1,11 +1,14 @@
 const bedrock = require('bedrock-protocol');
 
 function createBot() {
+  console.log('🔄 Attempting to connect to Aternos Bedrock server...');
+  
   const client = bedrock.createClient({
-    host: 'Killanimal.aternos.me', // Tomar Aternos Server IP
-    port: 19132,                  // Tomar Bedrock Port
-    username: 'AFK_Bot',          // Bot-er in-game nam
-    offline: true                 // Cracked/Aternos server er jonno true thakbe
+    host: 'Killanimal.aternos.me', // Tomar server domain
+    port: 19132,                  // Port
+    username: 'AFK_Bot_' + Math.floor(Math.random() * 1000), // Random number add korlam jate duplicate name error na ase
+    offline: true,
+    skipPing: true                // Server discovery / ping skip kore direct connect korar jonno
   });
 
   client.on('connect', () => {
@@ -13,31 +16,35 @@ function createBot() {
   });
 
   client.on('spawn', () => {
-    console.log('Bot spawned in the world and keeping chunks loaded.');
+    console.log('🎉 Bot spawned in the world and keeping chunks loaded.');
 
-    // Prottek 2 minutes (120,000 milliseconds) por por automatic message pathabe
+    // Prottek 2 minutes (120,000 ms) por por message pathabe
     setInterval(() => {
-      // Bedrock server-e text command pathanor standard syntax
-      client.queue('text', {
-        type: 'chat',
-        needs_translation: false,
-        source_name: client.username,
-        xuid: '',
-        platform_chat_id: '',
-        message: '🤖 Bot is active and keeping the Aternos server alive! [Made by Ramim]'
-      });
-      console.log('💬 Sent AFK message to server.');
-    }, 120000); // 120000 ms = 2 minutes
+      try {
+        client.queue('text', {
+          type: 'chat',
+          needs_translation: false,
+          source_name: client.username,
+          xuid: '',
+          platform_chat_id: '',
+          message: '🤖 Bot is active and keeping the Aternos server alive! [Made by Ramim]'
+        });
+        console.log('💬 Sent 2-minute AFK heartbeat message.');
+      } catch (err) {
+        console.log('⚠️ Failed to send chat message:', err.message);
+      }
+    }, 120000); 
   });
 
   client.on('error', (err) => {
-    console.log('❌ Connection Error:', err);
+    console.log('❌ Connection Error:', err.message || err);
   });
 
   client.on('close', () => {
     console.log('⚠️ Bot disconnected from server. Reconnecting in 15 seconds...');
-    setTimeout(createBot, 15000); // Connection kete gele 15 second por abar try korbe
+    setTimeout(createBot, 15000); // 15 second por abar try korbe
   });
 }
 
-createBot();
+createConfirm = setTimeout(createBot, 2000);
+      
